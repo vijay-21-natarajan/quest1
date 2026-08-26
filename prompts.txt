@@ -1,0 +1,103 @@
+DIALOGUE FRAME FINDER — IMPORTANT PROJECT PROMPTS
+
+These are the key prompts used during the project discussion, selected to document the important design, architecture, implementation, and testing decisions.
+
+1. MODEL / LIBRARY SELECTION
+
+Prompt:
+I want to build this project within about 7 hours. For these requirements, identify the best open-source models, pretrained models, libraries, or Google Cloud/open-source alternatives that I can directly integrate into my Python project without modifying the model source files.
+
+Requirements:
+1) Frame extraction
+2) Voice-to-text conversion
+3) Subtitle-to-text conversion
+4) Multilingual language support
+5) Picture/frame capturing
+6) Exact timestamp detection
+
+For each requirement, recommend the best practical option, explain why it is suitable, how it can be integrated, and whether it can run locally.
+
+2. SIMPLE EXPLANATION OF FFmpeg
+
+Prompt:
+Explain why FFmpeg is used in this project in very simple ELI10 language. Explain exactly what FFmpeg does for video/audio processing and which tasks in my project should use it.
+
+3. SIMPLE EXPLANATION OF FFprobe
+
+Prompt:
+Explain why FFprobe is used in this project in simple ELI10 language. Explain the difference between FFmpeg and FFprobe, especially for video metadata, timing, FPS, streams, and timestamp/frame calculations.
+
+4. SIMPLE EXPLANATION OF PyAV
+
+Prompt:
+Explain why PyAV is used in this project in simple ELI10 language. Explain how PyAV relates to FFmpeg and why it is useful for sequential frame decoding and accurate timestamp handling in Python.
+
+5. SIMPLE EXPLANATION OF RapidFuzz
+
+Prompt:
+Explain why RapidFuzz is used in this project in simple ELI10 language. Explain how fuzzy text similarity helps compare the target dialogue with OCR/Whisper/subtitle text when there are spelling, OCR, punctuation, or extra-word differences.
+
+6. SIMPLE EXPLANATION OF OpenCV
+
+Prompt:
+Explain what OpenCV is doing in this project in simple ELI10 language. Explain whether it is a pretrained model or a library, what code we need to write ourselves, and whether PyAV is a better choice for frame-accurate sequential decoding.
+
+7. SIMPLE EXPLANATION OF Pillow
+
+Prompt:
+Explain why Pillow is used in this project in simple ELI10 language. Explain what it does with extracted frames/images and how it differs from OpenCV, PyAV, OCR, and FFmpeg.
+
+8. PROJECT ARCHITECTURE
+
+Prompt:
+You are a senior developer and need to finish this project within 7 hours.
+
+Design the complete architecture and workflow for a dialogue-frame-finder project. Explain:
+1) How each model/library should be used
+2) The complete workflow from video input to final result
+3) A suitable architecture diagram/workflow diagram
+4) The ideal project file structure
+5) What each file should do
+6) How to keep model wrappers separate from application logic
+7) How to find the exact dialogue frame and timestamp efficiently
+8) How to handle OCR errors, audio-only dialogue, subtitles, multilingual content, fade-in text, CFR/VFR video, and uncertainty.
+
+Do not modify pretrained model source files. All model integration should happen through wrapper modules in the main project.
+
+9. FILE STRUCTURE REVIEW
+
+Prompt:
+Review the following project structure as a senior developer. Tell me whether it is appropriate for a 7-hour implementation, identify unnecessary complexity, suggest only important changes, and explain how the folders map to the actual pipeline.
+
+[Paste the current project structure here]
+
+10. FILE-BY-FILE EXPLANATION
+
+Prompt:
+Explain what every file in this project structure does, in simple but technically accurate language. Explain the responsibility of each file, what inputs it receives, what outputs it produces, and how it connects to the other files.
+
+Also make sure the architecture does not assume that a target dialogue is necessarily provided if the actual problem statement requires automatic dialogue discovery.
+
+11. EXACT TIMESTAMP REQUIREMENT
+
+Prompt:
+In this project, what exactly should the timestamp represent? Explain the difference between:
+- speech start time
+- subtitle cue start time
+- first visual appearance of dialogue
+- first stably OCR-readable frame
+
+Explain which timestamp should be reported when the requirement asks for the exact frame where dialogue first appears, and how PyAV/PTS can be used to obtain it.
+
+12. TESTING STRATEGY
+
+Prompt:
+Give me reliable test videos for this project. For each test, provide:
+- Exact video URL
+- Dialogue/text to search
+- Expected approximate time or verified timing region
+- Whether the dialogue is spoken, visible on screen, subtitle-based, or audio-only
+- What part of the pipeline the test validates
+
+Do not invent timestamps. Clearly distinguish verified timestamps from approximate ones.
+
