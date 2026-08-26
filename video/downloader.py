@@ -23,26 +23,6 @@ import config
 log = logging.getLogger(__name__)
 
 
-class NetworkPermissionError(RuntimeError):
-    """Raised when Windows prevents yt-dlp from opening an HTTPS socket."""
-
-
-def _raise_helpful_network_error(error: Exception) -> None:
-    """Translate a Windows socket-permission failure into actionable guidance."""
-    message = str(error)
-    if "WinError 10013" not in message:
-        raise error
-
-    raise NetworkPermissionError(
-        "Windows blocked this app from opening an HTTPS connection to YouTube "
-        "(WinError 10013). This is not a problem with the video URL. Allow the "
-        "Python interpreter running this project through your security software "
-        "or network policy, then retry. If you are on a work/school network or "
-        "VPN, connect through its approved proxy or ask the network administrator "
-        "to allow outbound HTTPS (port 443) to www.youtube.com."
-    ) from error
-
-
 def probe_url(url: str) -> dict:
     """
     Fetch metadata WITHOUT downloading.
@@ -55,15 +35,11 @@ def probe_url(url: str) -> dict:
         "quiet": True,
         "no_warnings": True,
         "skip_download": True,
-        "socket_timeout": config.DOWNLOAD_TIMEOUT,
     }
 
-    try:
-        with yt_dlp.YoutubeDL(opts) as ydl:
-            # download=False makes this metadata-only.
-            info = ydl.extract_info(url, download=False)
-    except Exception as error:
-        _raise_helpful_network_error(error)
+    with yt_dlp.YoutubeDL(opts) as ydl:
+        # download=False makes this metadata-only.
+        info = ydl.extract_info(url, download=False)
 
     return info
 
@@ -104,14 +80,11 @@ def download(url: str, output_dir: Path = None) -> tuple:
 
     log.info("Downloading %s", url)
 
-    try:
-        with yt_dlp.YoutubeDL(opts) as ydl:
-            info = ydl.extract_info(url, download=True)
-            # prepare_filename gives the path BEFORE post-processing. If streams were
-            # merged the real extension may differ, so we verify below.
-            path = Path(ydl.prepare_filename(info))
-    except Exception as error:
-        _raise_helpful_network_error(error)
+    with yt_dlp.YoutubeDL(opts) as ydl:
+        info = ydl.extract_info(url, download=True)
+        # prepare_filename gives the path BEFORE post-processing. If streams were
+        # merged the real extension may differ, so we verify below.
+        path = Path(ydl.prepare_filename(info))
 
     if not path.exists():
         # Merging changed the container extension. Find the actual file by
