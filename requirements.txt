@@ -1,0 +1,25 @@
+#requirements.txt
+# Pinned to versions verified working. Pin yt-dlp especially: extractors for
+# individual sites break between releases, so a version that successfully pulls
+# your evaluation video should not be allowed to float.
+
+yt-dlp==2026.8.19          # video download; supports many sites incl. ok.ru
+curl_cffi==0.16.2          # yt-dlp's browser-impersonation backend; some sites
+                            # (e.g. Dailymotion) block requests that don't look
+                            # like a real browser without this
+av==13.1.0                 # PyAV: frame-accurate decoding via PTS
+opencv-python==4.10.0.84   # imwrite ONLY -- never used for frame seeking
+faster-whisper==1.1.0      # ASR with word-level timestamps (CTranslate2 backend)
+paddleocr==2.9.1           # text detection + recognition
+paddlepaddle==2.6.2        # paddleocr's runtime (use paddlepaddle-gpu for CUDA)
+pysubs2==1.7.3             # SRT / VTT / ASS parsing
+rapidfuzz==3.10.1          # fuzzy string matching
+numpy==1.26.4              # pinned <2.0: paddle and opencv wheels still expect it
+pytest==8.3.4              # tests
+fastapi==0.115.6           # web API for the browser frontend (server.py)
+uvicorn==0.34.0            # ASGI server that runs server.py
+
+# System dependency, NOT pip-installable:
+#   ffmpeg and ffprobe must be on PATH.
+#   Ubuntu/Debian: sudo apt install ffmpeg
+#   macOS:         brew install ffmpeg

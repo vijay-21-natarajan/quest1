@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dialogue Frame Finder</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            color: #222;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 90px;
+        }
+
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #4a6cf7;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 6px;
+            background: #4a6cf7;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #3858d6;
+        }
+
+        button:disabled {
+            background: #aaa;
+            cursor: not-allowed;
+        }
+
+        #loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+            color: #555;
+        }
+
+        #error {
+            display: none;
+            background: #ffe5e5;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+        }
+
+        #result {
+            display: none;
+        }
+
+        .result-title {
+            margin-bottom: 20px;
+            color: #222;
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .result-item {
+            background: #f7f8fa;
+            padding: 15px;
+            border-radius: 6px;
+        }
+
+        .result-item strong {
+            display: block;
+            color: #555;
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+
+        .result-item span {
+            color: #222;
+            word-break: break-word;
+        }
+
+        .result-text {
+            background: #f7f8fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .result-text strong {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        .result-image {
+            text-align: center;
+        }
+
+        .result-image img {
+            max-width: 100%;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            background: #e8f5e9;
+            color: #2e7d32;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .status.unconfirmed {
+            background: #fff3e0;
+            color: #b35c00;
+        }
+
+        #resultNote {
+            display: none;
+            background: #fff3e0;
+            color: #7a4400;
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        @media (max-width: 600px) {
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Dialogue Frame Finder</h1>
+
+    <p class="subtitle">
+        Find the exact video frame where a dialogue appears
+    </p>
+
+    <!-- INPUT -->
+    <div class="card">
+
+        <form id="searchForm">
+
+            <div class="form-group">
+                <label for="videoUrl">
+                    Video URL
+                </label>
+
+                <input
+                    type="text"
+                    id="videoUrl"
+                    name="videoUrl"
+                    placeholder="Enter video URL or local file path"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="dialogue">
+                    Dialogue
+                </label>
+
+                <textarea
+                    id="dialogue"
+                    name="dialogue"
+                    placeholder="Enter the dialogue to find"
+                    required
+                ></textarea>
+            </div>
+
+            <button type="submit" id="submitButton">
+                Find Frame
+            </button>
+
+        </form>
+
+        <div id="loading">
+            ⏳ Processing video... This may take some time.
+        </div>
+
+        <div id="error"></div>
+
+    </div>
+
+
+    <!-- RESULT -->
+    <div class="card" id="result">
+
+        <h2 class="result-title">
+            Result
+        </h2>
+
+        <div id="resultNote"></div>
+
+        <div class="result-grid">
+
+            <div class="result-item">
+                <strong>Timestamp</strong>
+                <span id="timestamp">-</span>
+            </div>
+
+            <div class="result-item">
+                <strong>Frame Number</strong>
+                <span id="frameNumber">-</span>
+            </div>
+
+            <div class="result-item">
+                <strong>Confidence</strong>
+                <span id="confidence">-</span>
+            </div>
+
+            <div class="result-item">
+                <strong>Modality</strong>
+                <span id="modality" class="status">-</span>
+            </div>
+
+        </div>
+
+        <div class="result-text">
+
+            <strong>Detected Text</strong>
+
+            <span id="detectedText">
+                -
+            </span>
+
+        </div>
+
+        <div class="result-image">
+
+            <h3 style="margin-bottom: 15px;">
+                Matching Frame
+            </h3>
+
+            <img
+                id="resultImage"
+                src=""
+                alt="Matching video frame"
+            >
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    // Same-origin: the page is served by server.py itself, so a relative
+    // path works whether it's opened as 127.0.0.1, localhost, or a LAN IP.
+    const API_URL = "/process";
+
+
+    const form = document.getElementById("searchForm");
+
+    const submitButton =
+        document.getElementById("submitButton");
+
+    const loading =
+        document.getElementById("loading");
+
+    const error =
+        document.getElementById("error");
+
+    const result =
+        document.getElementById("result");
+
+    const resultNote =
+        document.getElementById("resultNote");
+
+
+    form.addEventListener("submit", async function(event) {
+
+        event.preventDefault();
+
+        // Get user input
+        const videoUrl =
+            document.getElementById("videoUrl").value.trim();
+
+        const dialogue =
+            document.getElementById("dialogue").value.trim();
+
+
+        // Reset UI
+        error.style.display = "none";
+        result.style.display = "none";
+
+        loading.style.display = "block";
+
+        submitButton.disabled = true;
+        submitButton.textContent = "Processing...";
+
+
+        try {
+
+            /*
+             * Send request to Python backend
+             */
+
+            const response = await fetch(API_URL, {
+
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    url: videoUrl,
+                    dialogue: dialogue
+                })
+
+            });
+
+
+            /*
+             * Convert backend response to JSON
+             */
+
+            const data = await response.json();
+
+
+            /*
+             * Handle backend error
+             */
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.detail ||
+                    data.message ||
+                    "Something went wrong."
+                );
+
+            }
+
+
+            /*
+             * Display result
+             */
+
+            document.getElementById("timestamp").textContent =
+                data.timestamp || "-";
+
+
+            document.getElementById("frameNumber").textContent =
+                data.frame || data.frame_number || "-";
+
+
+            document.getElementById("detectedText").textContent =
+                data.text || "-";
+
+
+            document.getElementById("confidence").textContent =
+                data.confidence !== undefined
+                    ? data.confidence
+                    : "-";
+
+
+            const modalityEl = document.getElementById("modality");
+            modalityEl.textContent = data.modality || "-";
+
+            // found === false with a modality still present (currently only
+            // "audio_only") means the line was located but never confirmed as
+            // on-screen text -- flag that clearly instead of showing it the
+            // same way as a confirmed match.
+            if (data.found === false) {
+                modalityEl.classList.add("unconfirmed");
+                resultNote.textContent =
+                    data.note ||
+                    "Not confirmed as on-screen text -- this is an illustrative frame only.";
+                resultNote.style.display = "block";
+            } else {
+                modalityEl.classList.remove("unconfirmed");
+                resultNote.style.display = "none";
+            }
+
+
+            /*
+             * Display result image
+             *
+             * The backend returns something like:
+             *
+             * image: "/results/frame_00000460.png"
+             */
+
+            if (data.image) {
+
+                document.getElementById("resultImage").src =
+                    data.image;
+
+            }
+
+
+            result.style.display = "block";
+
+
+        } catch (err) {
+
+            error.textContent =
+                "Error: " + err.message;
+
+            error.style.display = "block";
+
+        } finally {
+
+            loading.style.display = "none";
+
+            submitButton.disabled = false;
+
+            submitButton.textContent = "Find Frame";
+
+        }
+
+    });
+
+</script>
+
+</body>
+</html>
