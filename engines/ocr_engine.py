@@ -44,6 +44,7 @@ def get_engine():
     if _ENGINE is not None:
         return _ENGINE
 
+    # pyrefly: ignore [missing-import]
     from paddleocr import PaddleOCR
 
     log.info("Loading PaddleOCR (lang=%s)...", config.OCR_LANG)
