@@ -6,7 +6,7 @@ The objective of this project is to locate the exact point in a video where a gi
 
 The system accepts:
 
-1. A video URL or local video file
+1. A YouTube video URL
 2. A target dialogue/text
 
 The system then searches the video using multiple sources of evidence:
