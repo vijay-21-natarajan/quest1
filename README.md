@@ -166,4 +166,4 @@ To run ground-truth synthetic clip generation and end-to-end verification:
 ```bash
 python scripts/make_fixture.py --text "the quick brown fox" --at 3.0 --fps 25
 python main.py --url tests/fixtures/fixture_25fps_480p.mp4 --text "the quick brown fox"
-```
+```
