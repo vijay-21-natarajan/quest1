@@ -1,6 +1,6 @@
 # Dialogue Frame Finder 🎬
 
-**Dialogue Frame Finder** is a high-accuracy, frame-accurate AI pipeline that locates the exact video frame and timestamp where a given line of dialogue first appears on screen or is spoken aloud. 
+**Dialogue Frame Finder** is a high-accuracy, frame-accurate AI pipeline that takes a **YouTube video URL** and locates the exact video frame and timestamp where a given line of dialogue first appears on screen or is spoken aloud. 
 
 It returns:
 - **Timestamp** (HH:MM:SS.mmm)
@@ -61,7 +61,7 @@ uvicorn server:app --reload
 Once running, open your web browser and navigate to:
 👉 **`http://127.0.0.1:8000/`**
 
-Enter the **Video URL** (YouTube link or local file path) and the **Dialogue Text**, then click **Find Frame**.
+Enter the **YouTube Video URL** and the **Dialogue Text**, then click **Find Frame**.
 
 ---
 
@@ -72,7 +72,7 @@ Run the interactive wizard in your console:
 ```bash
 python run_example.py
 ```
-Follow the step-by-step prompts to input your URL, dialogue, and search preferences.
+Follow the step-by-step prompts to input your YouTube URL, dialogue, and search preferences.
 
 ---
 
@@ -81,30 +81,26 @@ Follow the step-by-step prompts to input your URL, dialogue, and search preferen
 Run directly via `main.py`:
 
 ```bash
-python main.py --url "VIDEO_URL_OR_PATH" --text "TARGET_DIALOGUE"
+python main.py --url "YOUTUBE_VIDEO_URL" --text "TARGET_DIALOGUE"
 ```
 
 #### CLI Examples
 
-- **YouTube Video**:
+- **YouTube Video Search**:
   ```bash
   python main.py --url "https://www.youtube.com/watch?v=dQw4w9WgXcQ" --text "never gonna give you up"
   ```
-- **Local MP4 / MKV File**:
-  ```bash
-  python main.py --url "C:\path\to\video.mp4" --text "my dialogue text"
-  ```
 - **OCR Only (Skip Speech Recognition for Faster Results)**:
   ```bash
-  python main.py --url "video.mp4" --text "on-screen text" --no-audio
+  python main.py --url "https://www.youtube.com/watch?v=dQw4w9WgXcQ" --text "on-screen text" --no-audio
   ```
 - **Full-Frame Scan (For Centered Titles or Title Cards)**:
   ```bash
-  python main.py --url "video.mp4" --text "title text" --full-frame
+  python main.py --url "https://www.youtube.com/watch?v=dQw4w9WgXcQ" --text "title text" --full-frame
   ```
 - **Verbose Debugging**:
   ```bash
-  python main.py --url "video.mp4" --text "dialogue" --verbose
+  python main.py --url "https://www.youtube.com/watch?v=dQw4w9WgXcQ" --text "dialogue" --verbose
   ```
 
 ---
@@ -113,7 +109,7 @@ python main.py --url "VIDEO_URL_OR_PATH" --text "TARGET_DIALOGUE"
 
 | Parameter | Description | Required | Default |
 |-----------|-------------|----------|---------|
-| `--url URL` | Video URL (YouTube, Vimeo, etc.) or local file path | ✅ Yes | N/A |
+| `--url URL` | YouTube video URL | ✅ Yes | N/A |
 | `--text TEXT` | Target dialogue to find | ✅ Yes | N/A |
 | `--no-audio` | Skip ASR/Whisper (faster; scans OCR only) | ❌ No | `False` |
 | `--full-frame` | Scan 100% of frame height (instead of bottom 35%) | ❌ No | `False` |
@@ -170,4 +166,4 @@ To run ground-truth synthetic clip generation and end-to-end verification:
 ```bash
 python scripts/make_fixture.py --text "the quick brown fox" --at 3.0 --fps 25
 python main.py --url tests/fixtures/fixture_25fps_480p.mp4 --text "the quick brown fox"
-```
+```
